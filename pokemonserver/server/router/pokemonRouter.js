@@ -1,9 +1,14 @@
 var pokemonRouter = require('express').Router();
-var pokemonController = require('./pokemonController');
+const controller = require('../controller/pokemonController.js');
 
 // TODO: Create route handlers for each of the six methods in pokemonController
 pokemonRouter.route('/')
+  .get(controller.retrieve)
+  .post(controller.createOne);
 
-pokemonRouter.route('/:number')
+pokemonRouter.route('/:id')
+  .get(controller.retrieveOne)
+  .put(controller.updateOne)
+  .delete(controller.deleteOne);
 
 module.exports = pokemonRouter;

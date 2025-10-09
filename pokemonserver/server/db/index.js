@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var mongoUri = 'mongodb://localhost/pokemon';
+let mongoose = require('mongoose');
+let mongoUri = 'mongodb://localhost:27018/pokemon';
 
 // TODO: Connect Mongoose to our local MongoDB via URI specified above and export it below
-var db;
+let db = mongoose.connect(mongoUri);
 
 module.exports = db;
