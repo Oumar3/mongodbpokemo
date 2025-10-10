@@ -17,7 +17,7 @@ app.use(log);
 
 
 // Routes API avec middleware de rate limiting
-app.use('/api/pokemon', pokemonRouter);
+app.use('/api/pokemon', rateLimiter,pokemonRouter);
 app.use('/api/trainers', trainerRouter);
 app.use('/api/zones', zoneRouter);
 app.use('/api/users', userRouter);
