@@ -9,6 +9,7 @@ const pokemonSchema = new mongoose.Schema({
   imageUrl: [{ type: String }]
 });
 
+
 // TODO: Register the pokemonSchema with Mongoose as the 'Pokemon' collection.
 const Pokemon = mongoose.model('Pokemon', pokemonSchema);
 
