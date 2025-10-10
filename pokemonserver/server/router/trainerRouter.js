@@ -12,8 +12,5 @@ trainerRouter.route('/:id')
   .put(controller.updateTrainer)      // PUT /trainers/:id - Mettre à jour un trainer
   .delete(controller.deleteTrainer);  // DELETE /trainers/:id - Supprimer un trainer
 
-// Route pour assigner un pokémon à un trainer
-trainerRouter.route('/:trainerId/assign-pokemon')
-  .post(controller.assignPokemonToTrainer); // POST /trainers/:trainerId/assign-pokemon
 
 module.exports = trainerRouter;

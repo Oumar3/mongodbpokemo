@@ -51,6 +51,7 @@ const getZoneById = async (req, res) => {
 // POST - Créer une nouvelle zone
 const createZone = async (req, res) => {
     const { name,  region, pokemons } = req.body;
+    console.log(name,region,pokemons);
     try {
         // Validation des données
         if (!name || !region) {

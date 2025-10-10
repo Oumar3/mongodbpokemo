@@ -3,7 +3,7 @@ const Trainer = require("../model/Trainer");
 // GET - Récupérer tous les trainers
 const getTrainers = async (req, res) => {
     try {
-        const trainers = await Trainer.find().populate('pokemons');
+        const trainers = await Trainer.find();
         res.status(200).json({
             success: true,
             count: trainers.length,
@@ -278,7 +278,7 @@ module.exports = {
     createTrainer,
     updateTrainer,
     deleteTrainer,
-    assignPokemonToTrainer
+    // assignPokemonToTrainer
     // addPokemonToTrainer,
     // removePokemonFromTrainer
 };

@@ -10,7 +10,7 @@ const pokemonSchema = new mongoose.Schema({
   types: [{ type: String, required: true }],
   imageUrl: [{ type: String }],
   trainer: { type: mongoose.Schema.Types.ObjectId, ref: 'Trainer' },
-  Zones: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Zone' }]
+  zones: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Zone' }]
 });
 
 

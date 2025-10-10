@@ -1,0 +1,12 @@
+{
+    "Zones": ["68e91777ce8c9ffb6d0490f1"],
+    "number": 2025,
+    "name": "Test pokemon and zone",
+    "types": [
+      "test"
+    ],
+    "imageUrl": [
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1251.png"
+    ],
+    "trainer":"68e8dd92cb53f927824374b8"
+}
