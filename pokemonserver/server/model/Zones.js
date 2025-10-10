@@ -9,8 +9,6 @@ const ZoneSchema = new mongoose.Schema({
   timestamps: true
 });
 
-
-
 const Zone = mongoose.model("Zone", ZoneSchema);
 
 module.exports = Zone

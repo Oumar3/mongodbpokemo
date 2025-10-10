@@ -1,18 +1,19 @@
 const Pokemon = require('../model/Pokemon');
 const mongoose = require('mongoose');
+const trainer = require('../model/Trainer.js');
 
 // TODO: Complete each of the following controller methods 
 const controller = {
   createOne: function (req, res) {
-    const { number, name, types, imageUrl } = req.body;
-    const newPokemon = new Pokemon({ number, name, types, imageUrl });
+    const { number, name, types, imageUrl, trainer } = req.body;
+    const newPokemon = new Pokemon({ number, name, types, imageUrl, trainer });
     newPokemon.save()
       .then((pokemon) => res.status(201).json(pokemon))
       .catch((error) => res.status(400).json({ error: error.message }));
   },
 
   retrieve: function (req, res) {
-    Pokemon.find()
+    Pokemon.find().populate('trainer')
       .then((pokemons) => res.status(200).json(pokemons))
       .catch((error) => res.status(400).json({ error: error.message }));
   },
@@ -22,7 +23,7 @@ const controller = {
     if(!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: 'Invalid ID format' });
     }
-    Pokemon.findById(id)
+    Pokemon.findById(id).populate('trainer')
       .then((pokemon) => {
         if (!pokemon) {
           return res.status(404).json({ error: 'Pokemon not found' });
@@ -38,6 +39,7 @@ const controller = {
       return res.status(400).json({ error: 'Invalid ID format' });
     }
     const { number, name, types, imageUrl } = req.body;
+
     Pokemon.findByIdAndUpdate(id, { number, name, types, imageUrl }, { new: true })
       .then((pokemon) => {
         if (!pokemon) {

@@ -6,7 +6,7 @@ const allPokemons = require('../../data/pokemon.json')
 const insertAllPokemons = function() {
   Pokemon.create(allPokemons)
     .then(() => {
-      console.log('Pokemon data seeded successfully!');
+      console.log('Pokemon data seeded successfully!'); 
       mongoose.disconnect();
     })
     .catch(err => {

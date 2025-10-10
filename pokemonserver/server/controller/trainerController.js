@@ -60,10 +60,23 @@ const createTrainer = async (req, res) => {
         });
 
         const savedTrainer = await newTrainer.save();
+
+        // Si des pokémons sont fournis, mettre à jour leur référence trainer
+        if (pokemons && pokemons.length > 0) {
+            const Pokemon = require('../model/Pokemon');
+            await Pokemon.updateMany(
+                { _id: { $in: pokemons } },
+                { trainer: savedTrainer._id }
+            );
+        }
+
+        // Récupérer le trainer avec les pokémons populés
+        const trainerWithPokemons = await Trainer.findById(savedTrainer._id).populate('pokemons');
+
         res.status(201).json({
             success: true,
             message: "Trainer créé avec succès",
-            data: savedTrainer
+            data: trainerWithPokemons
         });
     } catch (err) {
         res.status(500).json({
@@ -203,12 +216,69 @@ const deleteTrainer = async (req, res) => {
 //     }
 // };
 
+// POST - Assigner un pokémon existant à un trainer
+const assignPokemonToTrainer = async (req, res) => {
+    try {
+        const { trainerId } = req.params;
+        const { pokemonId } = req.body;
+        const Pokemon = require('../model/Pokemon');
+
+        // Vérifier que le trainer existe
+        const trainer = await Trainer.findById(trainerId);
+        if (!trainer) {
+            return res.status(404).json({
+                success: false,
+                message: "Trainer non trouvé"
+            });
+        }
+
+        // Vérifier que le pokémon existe
+        const pokemon = await Pokemon.findById(pokemonId);
+        if (!pokemon) {
+            return res.status(404).json({
+                success: false,
+                message: "Pokémon non trouvé"
+            });
+        }
+
+        // Vérifier si le pokémon n'est pas déjà assigné à ce trainer
+        if (trainer.pokemons.includes(pokemonId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Ce Pokémon est déjà dans l'équipe de ce trainer"
+            });
+        }
+
+        // Mettre à jour les deux côtés de la relation
+        trainer.pokemons.push(pokemonId);
+        pokemon.trainer = trainerId;
+
+        await Promise.all([trainer.save(), pokemon.save()]);
+
+        // Retourner le trainer avec ses pokémons
+        const updatedTrainer = await Trainer.findById(trainerId).populate('pokemons');
+
+        res.status(200).json({
+            success: true,
+            message: "Pokémon assigné au trainer avec succès",
+            data: updatedTrainer
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: "Erreur lors de l'assignation du Pokémon",
+            error: err.message
+        });
+    }
+};
+
 module.exports = {
     getTrainers,
     getTrainerById,
     createTrainer,
     updateTrainer,
     deleteTrainer,
+    assignPokemonToTrainer
     // addPokemonToTrainer,
     // removePokemonFromTrainer
 };

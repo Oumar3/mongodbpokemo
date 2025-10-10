@@ -18,9 +18,9 @@ const rateLimiter = (req, res, next) => {
     standardHeaders: true, // Activer les en-têtes `RateLimit-*`
     message: { error: "Trop de requêtes, veuillez réessayer plus tard." },
     // Utiliser l'ID utilisateur comme clé pour le rate limiting au lieu de l'IP
-    keyGenerator: (req) => {
-      return req.headers['user-id'] || req.headers['x-user-id'] || req.ip;
-    }
+    // keyGenerator: (req) => {
+    //   return req.headers['user-id'] || req.headers['x-user-id'] || req.ip;
+    // }
   });
   
   limiter(req, res, next);
