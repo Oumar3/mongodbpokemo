@@ -1,0 +1,77 @@
+Trainer:
+  type: object
+  properties:
+    _id:
+      type: string
+      format: objectId
+      description: Identifiant unique MongoDB
+      example: "507f1f77bcf86cd799439011"
+    name:
+      type: string
+      description: Nom du dresseur
+      example: "Ash Ketchum"
+    age:
+      type: integer
+      description: Âge du dresseur
+      minimum: 1
+      example: 16
+    pokemons:
+      type: array
+      items:
+        type: object
+        properties:
+          _id:
+            type: string
+            format: objectId
+          number:
+            type: integer
+          name:
+            type: string
+          types:
+            type: array
+            items:
+              type: string
+      description: Liste des Pokémon du dresseur (relation populée)
+  required:
+    - name
+    - age
+
+TrainerCreate:
+  type: object
+  properties:
+    name:
+      type: string
+      description: Nom du dresseur
+      example: "Ash Ketchum"
+    age:
+      type: integer
+      minimum: 1
+      description: Âge du dresseur
+      example: 16
+    pokemons:
+      type: array
+      items:
+        type: string
+        format: objectId
+      description: IDs des Pokémon à assigner
+      example: ["507f1f77bcf86cd799439011"]
+  required:
+    - name
+    - age
+
+TrainerUpdate:
+  type: object
+  properties:
+    name:
+      type: string
+      example: "Red"
+    age:
+      type: integer
+      minimum: 1
+      example: 18
+    pokemons:
+      type: array
+      items:
+        type: string
+        format: objectId
+      example: ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"]

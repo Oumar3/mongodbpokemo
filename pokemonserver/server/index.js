@@ -1,6 +1,7 @@
 // Charger les variables d'environnement
 require('dotenv').config();
-
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
 let express = require('express');
 let db = require('./db');
 let pokemonRouter = require('./router/pokemonRouter');
@@ -12,9 +13,12 @@ let log = require('./middleware/logger.js')
 
 let app = express();
 
+// Charger le fichier YAML
+const swaggerDocument = YAML.load('../docs-api/openApi.yml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.use(express.json());
 app.use(log);
-
 
 // Routes API avec middleware de rate limiting
 app.use('/api/pokemon', rateLimiter,pokemonRouter);
@@ -25,5 +29,5 @@ app.use('/api/users', userRouter);
 var PORT = 3000;
 
 app.listen(PORT, function () {
-  console.log('Poke-MongoDB RESTful API listening on http://localhost:' + PORT);
+  console.log('Db connected http://localhost:' + PORT);
 });

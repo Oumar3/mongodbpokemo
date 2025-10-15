@@ -1,0 +1,89 @@
+User:
+  type: object
+  properties:
+    _id:
+      type: string
+      format: objectId
+      description: Identifiant unique MongoDB
+      example: "507f1f77bcf86cd799439011"
+    username:
+      type: string
+      description: Nom d'utilisateur unique
+      example: "trainer123"
+    email:
+      type: string
+      format: email
+      description: Adresse email unique
+      example: "trainer@pokemon.com"
+    password:
+      type: string
+      description: Mot de passe hashé
+      writeOnly: true
+  required:
+    - username
+    - email
+    - password
+
+UserRegistration:
+  type: object
+  properties:
+    username:
+      type: string
+      minLength: 3
+      maxLength: 30
+      description: Nom d'utilisateur unique
+      example: "trainer123"
+    password:
+      type: string
+      minLength: 6
+      description: Mot de passe en clair
+      example: "password123"
+    email:
+      type: string
+      format: email
+      description: Adresse email unique
+      example: "trainer@pokemon.com"
+  required:
+    - username
+    - password
+    - email
+
+UserLogin:
+  type: object
+  properties:
+    username:
+      type: string
+      description: Nom d'utilisateur
+      example: "trainer123"
+    password:
+      type: string
+      description: Mot de passe en clair
+      example: "password123"
+  required:
+    - username
+    - password
+
+LoginResponse:
+  type: object
+  properties:
+    message:
+      type: string
+      example: "Connexion réussie"
+    token:
+      type: string
+      description: Token JWT pour l'authentification
+      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    user:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectId
+          example: "507f1f77bcf86cd799439011"
+        username:
+          type: string
+          example: "trainer123"
+        email:
+          type: string
+          format: email
+          example: "trainer@pokemon.com"

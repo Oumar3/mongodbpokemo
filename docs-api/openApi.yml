@@ -1,0 +1,849 @@
+openapi: 3.0.3
+info:
+  title: Pokémon API
+  description: API REST pour gérer les Pokémon, Trainers, Zones et Utilisateurs avec authentification JWT
+  version: 1.0.0
+  contact:
+    name: Oumar Ali
+    email: oumar.ali@gmail.com
+
+    
+servers:
+  - url: http://localhost:3000
+    description: Serveur de développement local
+
+security:
+  - BearerAuth: []
+
+paths:
+  # Routes Utilisateurs
+  /api/users/register:
+    post:
+      tags:
+        - Users
+      summary: Créer un nouvel utilisateur
+      description: Inscription d'un nouvel utilisateur dans le système
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+            examples:
+              user_example:
+                summary: Exemple d'inscription
+                value:
+                  username: "trainer123"
+                  password: "password123"
+                  email: "trainer@pokemon.com"
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /api/users/login:
+    post:
+      tags:
+        - Users
+      summary: Connexion utilisateur
+      description: Authentification et obtention du token JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+            examples:
+              login_example:
+                summary: Exemple de connexion
+                value:
+                  username: "trainer123"
+                  password: "password123"
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+  # Routes Pokémon
+  /api/pokemon:
+    get:
+      tags:
+        - Pokemon
+      summary: Récupérer tous les Pokémon
+      description: Retourne la liste complète des Pokémon avec leurs relations
+      responses:
+        '200':
+          description: Liste des Pokémon récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pokemon'
+    post:
+      tags:
+        - Pokemon
+      summary: Créer un nouveau Pokémon
+      description: Ajoute un nouveau Pokémon dans la base de données
+      security:
+        - BearerAuth: []
+        - RateLimitAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PokemonCreate'
+            examples:
+              pokemon_example:
+                summary: Exemple de création de Pokémon
+                value:
+                  number: 2025
+                  name: "Test Pokemon"
+                  types: ["Electric", "Flying"]
+                  imageUrl: ["https://example.com/pokemon.png"]
+                  trainer: "68e8dd92cb53f927824374b8"
+                  zones: ["68e91777ce8c9ffb6d0490f1"]
+      responses:
+        '201':
+          description: Pokémon créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pokemon'
+
+
+  /api/pokemon/{id}:
+    get:
+      tags:
+        - Pokemon
+      summary: Récupérer un Pokémon par ID
+      description: Retourne les détails d'un Pokémon spécifique
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unique du Pokémon
+          schema:
+            type: string
+            format: objectId
+            example: "507f1f77bcf86cd799439011"
+      responses:
+        '200':
+          description: Pokémon trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pokemon'
+    put:
+      tags:
+        - Pokemon
+      summary: Mettre à jour un Pokémon
+      description: Modifie les informations d'un Pokémon existant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unique du Pokémon
+          schema:
+            type: string
+            format: objectId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PokemonUpdate'
+      responses:
+        '200':
+          description: Pokémon mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pokemon'
+    delete:
+      tags:
+        - Pokemon
+      summary: Supprimer un Pokémon
+      description: Supprime définitivement un Pokémon de la base de données
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unique du Pokémon
+          schema:
+            type: string
+            format: objectId
+      responses:
+        '200':
+          description: Pokémon supprimé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Pokemon deleted successfully"
+
+  # Routes Trainers
+  /api/trainers:
+    get:
+      tags:
+        - Trainers
+      summary: Récupérer tous les trainers
+      description: Retourne la liste de tous les dresseurs Pokémon
+      responses:
+        '200':
+          description: Liste des trainers récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trainer'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Erreur serveur"
+    post:
+      tags:
+        - Trainers
+      summary: Créer un nouveau trainer
+      description: Ajoute un nouveau dresseur Pokémon
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerCreate'
+            examples:
+              trainer_example:
+                summary: Exemple de création de trainer
+                value:
+                  name: "Ash Ketchum"
+                  age: 16
+                  pokemons: ["507f1f77bcf86cd799439011"]
+      responses:
+        '201':
+          description: Trainer créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trainer'
+        '401':
+          description: Authentification requise
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Authentification requise"
+
+  /api/trainers/{id}:
+    get:
+      tags:
+        - Trainers
+      summary: Récupérer un trainer par ID
+      description: Retourne les détails d'un dresseur avec ses Pokémon
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unique du trainer
+          schema:
+            type: string
+            format: objectId
+      responses:
+        '200':
+          description: Trainer trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trainer'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Erreur serveur"
+    put:
+      tags:
+        - Trainers
+      summary: Mettre à jour un trainer
+      description: Modifie les informations d'un dresseur existant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unique du trainer
+          schema:
+            type: string
+            format: objectId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerUpdate'
+      responses:
+        '200':
+          description: Trainer mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trainer'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Erreur serveur"
+    delete:
+      tags:
+        - Trainers
+      summary: Supprimer un trainer
+      description: Supprime définitivement un dresseur
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unique du trainer
+          schema:
+            type: string
+            format: objectId
+      responses:
+        '200':
+          description: Trainer supprimé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Trainer supprimé avec succès"
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Erreur serveur"
+
+  # Routes Zones
+  /api/zones:
+    get:
+      tags:
+        - Zones
+      summary: Récupérer toutes les zones
+      description: Retourne la liste de toutes les zones avec leurs Pokémon
+      responses:
+        '200':
+          description: Liste des zones récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Zone'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Erreur serveur"
+    post:
+      tags:
+        - Zones
+      summary: Créer une nouvelle zone
+      description: Ajoute une nouvelle zone géographique
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZoneCreate'
+            examples:
+              zone_example:
+                summary: Exemple de création de zone
+                value:
+                  name: "Forêt de Jade"
+                  region: "Kanto"
+                  pokemons: ["507f1f77bcf86cd799439011"]
+      responses:
+        '201':
+          description: Zone créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Zone'
+        '401':
+          description: Authentification requise
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Authentification requise"
+
+  /api/zones/{id}:
+    get:
+      tags:
+        - Zones
+      summary: Récupérer une zone par ID
+      description: Retourne les détails d'une zone avec ses Pokémon
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unique de la zone
+          schema:
+            type: string
+            format: objectId
+      responses:
+        '200':
+          description: Zone trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Zone'
+
+    put:
+      tags:
+        - Zones
+      summary: Mettre à jour une zone
+      description: Modifie les informations d'une zone existante
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unique de la zone
+          schema:
+            type: string
+            format: objectId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZoneUpdate'
+      responses:
+        '200':
+          description: Zone mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Zone'
+    delete:
+      tags:
+        - Zones
+      summary: Supprimer une zone
+      description: Supprime définitivement une zone et met à jour les Pokémon associés
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID unique de la zone
+          schema:
+            type: string
+            format: objectId
+      responses:
+        '200':
+          description: Zone supprimée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Zone supprimée avec succès"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT obtenu via la route /api/users/login
+
+  schemas:
+    # Schémas Utilisateurs
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: objectId
+          description: Identifiant unique MongoDB
+          example: "507f1f77bcf86cd799439011"
+        username:
+          type: string
+          description: Nom d'utilisateur unique
+          example: "trainer123"
+        email:
+          type: string
+          format: email
+          description: Adresse email unique
+          example: "trainer@pokemon.com"
+        password:
+          type: string
+          description: Mot de passe hashé
+          writeOnly: true
+      required:
+        - username
+        - email
+        - password
+
+    UserRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          description: Nom d'utilisateur unique
+          example: "trainer123"
+        password:
+          type: string
+          minLength: 6
+          description: Mot de passe en clair
+          example: "password123"
+        email:
+          type: string
+          format: email
+          description: Adresse email unique
+          example: "trainer@pokemon.com"
+      required:
+        - username
+        - password
+        - email
+
+    UserLogin:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Nom d'utilisateur
+          example: "trainer123"
+        password:
+          type: string
+          description: Mot de passe en clair
+          example: "password123"
+      required:
+        - username
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Connexion réussie"
+        token:
+          type: string
+          description: Token JWT pour l'authentification
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: objectId
+              example: "507f1f77bcf86cd799439011"
+            username:
+              type: string
+              example: "trainer123"
+            email:
+              type: string
+              format: email
+              example: "trainer@pokemon.com"
+
+    # Schémas Pokémon
+    Pokemon:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: objectId
+          description: Identifiant unique MongoDB
+          example: "507f1f77bcf86cd799439011"
+        number:
+          type: integer
+          description: Numéro unique du Pokémon dans le Pokédex
+          minimum: 1
+          example: 125
+        name:
+          type: string
+          description: Nom du Pokémon
+          example: "Electabuzz"
+        types:
+          type: array
+          items:
+            type: string
+          description: Types du Pokémon
+          example: ["Electric"]
+        imageUrl:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: URLs des images du Pokémon
+          example: ["https://localhost:3000/public/pokemon/125.png"]
+        trainer:
+          allOf:
+            - $ref: '#/components/schemas/Trainer'
+          description: Dresseur propriétaire du Pokémon (relation populée)
+        zones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Zone'
+          description: Zones où vit le Pokémon (relations populées)
+      required:
+        - number
+        - name
+        - types
+
+    PokemonCreate:
+      type: object
+      properties:
+        number:
+          type: integer
+          description: Numéro unique du Pokémon
+          minimum: 1
+          example: 2025
+        name:
+          type: string
+          description: Nom du Pokémon
+          example: "Test Pokemon"
+        types:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Types du Pokémon
+          example: ["Electric", "Flying"]
+        imageUrl:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: URLs des images
+          example: ["https://example.com/pokemon.png"]
+        trainer:
+          type: string
+          format: objectId
+          description: ID du dresseur propriétaire
+          example: "68e8dd92cb53f927824374b8"
+        zones:
+          type: array
+          items:
+            type: string
+            format: objectId
+          description: IDs des zones où vit le Pokémon
+          example: ["68e91777ce8c9ffb6d0490f1"]
+      required:
+        - number
+        - name
+        - types
+
+    PokemonUpdate:
+      type: object
+      properties:
+        number:
+          type: integer
+          minimum: 1
+          example: 126
+        name:
+          type: string
+          example: "Magmar Updated"
+        types:
+          type: array
+          items:
+            type: string
+          example: ["Fire", "Fighting"]
+        imageUrl:
+          type: array
+          items:
+            type: string
+            format: uri
+          example: ["https://example.com/updated-pokemon.png"]
+
+    # Schémas Trainers
+    Trainer:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: objectId
+          description: Identifiant unique MongoDB
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          description: Nom du dresseur
+          example: "Ash Ketchum"
+        age:
+          type: integer
+          description: Âge du dresseur
+          minimum: 1
+          example: 16
+        pokemons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pokemon'
+          description: Liste des Pokémon du dresseur (relation populée)
+      required:
+        - name
+        - age
+
+    TrainerCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nom du dresseur
+          example: "Ash Ketchum"
+        age:
+          type: integer
+          minimum: 1
+          description: Âge du dresseur
+          example: 16
+        pokemons:
+          type: array
+          items:
+            type: string
+            format: objectId
+          description: IDs des Pokémon à assigner
+          example: ["507f1f77bcf86cd799439011"]
+      required:
+        - name
+        - age
+
+    TrainerUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Red"
+        age:
+          type: integer
+          minimum: 1
+          example: 18
+        pokemons:
+          type: array
+          items:
+            type: string
+            format: objectId
+          example: ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"]
+
+    # Schémas Zones
+    Zone:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: objectId
+          description: Identifiant unique MongoDB
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          description: Nom de la zone
+          example: "Forêt de Jade"
+        region:
+          type: string
+          description: Région de la zone
+          example: "Kanto"
+        pokemons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pokemon'
+          description: Pokémon vivant dans cette zone (relation populée)
+      required:
+        - name
+        - region
+
+    ZoneCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nom unique de la zone
+          example: "Forêt de Jade"
+        region:
+          type: string
+          description: Région de la zone
+          example: "Kanto"
+        pokemons:
+          type: array
+          items:
+            type: string
+            format: objectId
+          description: IDs des Pokémon vivant dans cette zone
+          example: ["507f1f77bcf86cd799439011"]
+      required:
+        - name
+        - region
+
+    ZoneUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Forêt Mystique"
+        region:
+          type: string
+          example: "Johto"
+        pokemons:
+          type: array
+          items:
+            type: string
+            format: objectId
+          example: ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"]
+
+tags:
+  - name: Users
+    description: Gestion des utilisateurs et authentification JWT
+  - name: Pokemon
+    description: Opérations CRUD sur les Pokémon avec relations
+  - name: Trainers
+    description: Gestion des dresseurs Pokémon
+  - name: Zones
+    description: Gestion des zones géographiques où vivent les Pokémon

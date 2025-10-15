@@ -1,0 +1,123 @@
+Pokemon:
+  type: object
+  properties:
+    _id:
+      type: string
+      format: objectId
+      description: Identifiant unique MongoDB
+      example: "507f1f77bcf86cd799439011"
+    number:
+      type: integer
+      description: Numéro unique du Pokémon dans le Pokédex
+      minimum: 1
+      example: 125
+    name:
+      type: string
+      description: Nom du Pokémon
+      example: "Electabuzz"
+    types:
+      type: array
+      items:
+        type: string
+      description: Types du Pokémon
+      example: ["Electric"]
+    imageUrl:
+      type: array
+      items:
+        type: string
+        format: uri
+      description: URLs des images du Pokémon
+      example: ["https://localhost:3000/public/pokemon/125.png"]
+    trainer:
+      type: object
+      description: Dresseur propriétaire du Pokémon (relation populée)
+      properties:
+        _id:
+          type: string
+          format: objectId
+        name:
+          type: string
+        age:
+          type: integer
+    zones:
+      type: array
+      items:
+        type: object
+        properties:
+          _id:
+            type: string
+            format: objectId
+          name:
+            type: string
+          region:
+            type: string
+      description: Zones où vit le Pokémon (relations populées)
+  required:
+    - number
+    - name
+    - types
+
+PokemonCreate:
+  type: object
+  properties:
+    number:
+      type: integer
+      description: Numéro unique du Pokémon
+      minimum: 1
+      example: 2025
+    name:
+      type: string
+      description: Nom du Pokémon
+      example: "Test Pokemon"
+    types:
+      type: array
+      items:
+        type: string
+      minItems: 1
+      description: Types du Pokémon
+      example: ["Electric", "Flying"]
+    imageUrl:
+      type: array
+      items:
+        type: string
+        format: uri
+      description: URLs des images
+      example: ["https://example.com/pokemon.png"]
+    trainer:
+      type: string
+      format: objectId
+      description: ID du dresseur propriétaire
+      example: "68e8dd92cb53f927824374b8"
+    zones:
+      type: array
+      items:
+        type: string
+        format: objectId
+      description: IDs des zones où vit le Pokémon
+      example: ["68e91777ce8c9ffb6d0490f1"]
+  required:
+    - number
+    - name
+    - types
+
+PokemonUpdate:
+  type: object
+  properties:
+    number:
+      type: integer
+      minimum: 1
+      example: 126
+    name:
+      type: string
+      example: "Magmar Updated"
+    types:
+      type: array
+      items:
+        type: string
+      example: ["Fire", "Fighting"]
+    imageUrl:
+      type: array
+      items:
+        type: string
+        format: uri
+      example: ["https://example.com/updated-pokemon.png"]
