@@ -1,7 +1,6 @@
 // Charger les variables d'environnement
 require('dotenv').config();
 const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
 let express = require('express');
 let db = require('./db');
 let pokemonRouter = require('./router/pokemonRouter');
@@ -13,8 +12,8 @@ let log = require('./middleware/logger.js')
 
 let app = express();
 
-// Charger le fichier YAML
-const swaggerDocument = YAML.load('../docs-api/openApi.yml');
+// Charger le fichier JavaScript swagger
+const swaggerDocument = require('../../docs-api/swagger.js');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(express.json());
