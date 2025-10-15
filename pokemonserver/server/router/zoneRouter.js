@@ -1,11 +1,10 @@
 const zoneRouter = require('express').Router();
 const controller = require('../controller/zoneController.js');
-const authenticateToken = require('../middleware/auth');
 
 // Routes CRUD de base
 zoneRouter.route('/')
   .get(controller.getZones)        // GET /zones - Récupérer toutes les zones
-  .post(authenticateToken, controller.createZone);    // POST /zones - Créer une nouvelle zone
+  .post(controller.createZone);    // POST /zones - Créer une nouvelle zone
 
 zoneRouter.route('/:id')
   .get(controller.getZoneById)     // GET /zones/:id - Récupérer une zone par ID

@@ -1,6 +1,5 @@
 var pokemonRouter = require('express').Router();
 const controller = require('../controller/pokemonController.js');
-const authenticateToken = require('../middleware/auth');
 
 // TODO: Create route handlers for each of the six methods in pokemonController
 pokemonRouter.route('/')

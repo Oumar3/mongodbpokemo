@@ -19,7 +19,13 @@ const userController = {
             const newUser = new User({ username, password: hashedPassword, email });
             newUser.save()
             .then((savedUser) => {
-                res.status(201).json(savedUser);
+                // Réponse conforme au schéma Swagger
+                const userResponse = {
+                    username: savedUser.username,
+                    email: savedUser.email,
+                    password: "" // Mot de passe vide pour respecter le schéma Swagger
+                };
+                res.status(201).json(userResponse);
             })
             .catch((error) => {
                 res.status(400).json({ error: error.message });
