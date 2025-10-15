@@ -61,9 +61,6 @@ const controller = {
     }
     Pokemon.findByIdAndDelete(id)
       .then((pokemon) => {
-        if (!pokemon) {
-          return res.status(404).json({ error: 'Pokemon not found' });
-        }
         res.status(200).json({ message: 'Pokemon deleted successfully' });
       })
       .catch((error) => res.status(400).json({ error: error.message }));
